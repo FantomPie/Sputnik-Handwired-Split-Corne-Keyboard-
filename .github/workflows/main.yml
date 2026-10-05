@@ -43,8 +43,7 @@ jobs:
           west build -s zmk/app -b "${{ matrix.board }}" -- \
             -DSHIELD="${{ matrix.shield }}" \
             -DZMK_CONFIG="${GITHUB_WORKSPACE}/firmware/zmk-config/config" \
-            -DSHIELD_ROOT="${GITHUB_WORKSPACE}/firmware/zmk-config" \
-            ${{ matrix.cmake-args }}
+            -DSHIELD_ROOT="${GITHUB_WORKSPACE}/firmware/zmk-config"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
