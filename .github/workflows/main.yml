@@ -2,8 +2,52 @@ name: Build ZMK firmware
 on: [push, pull_request, workflow_dispatch]
 
 jobs:
+  matrix:
+    runs-on: ubuntu-latest
+    name: Fetch Build Keyboards
+    outputs:
+      build_matrix: ${{ steps.set.outputs.build_matrix }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: set
+        run: |
+          echo "build_matrix=$(yq -oj -I0 'firmware/zmk-config/build.yaml')" >> $GITHUB_OUTPUT
+
   build:
-    uses: zmkfirmware/zmk/.github/workflows/build-user-config.yml@v0.3
-    with:
-      build_matrix_path: firmware/zmk-config/build.yaml
-      config_path: firmware/zmk-config/config
+    runs-on: ubuntu-latest
+    container:
+      image: zmkfirmware/zmk-build-arm:stable
+    needs: matrix
+    name: Build
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.matrix.outputs.build_matrix) }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: West Init
+        working-directory: firmware/zmk-config
+        run: west init -l config
+
+      - name: West Update
+        working-directory: firmware/zmk-config
+        run: west update --fetch-opt=--filter=tree:0
+
+      - name: West Zephyr export
+        working-directory: firmware/zmk-config
+        run: west zephyr-export
+
+      - name: Build
+        working-directory: firmware/zmk-config
+        run: |
+          west build -s zmk/app -b "${{ matrix.board }}" -- \
+            -DSHIELD="${{ matrix.shield }}" \
+            -DZMK_CONFIG="${GITHUB_WORKSPACE}/firmware/zmk-config/config" \
+            -DSHIELD_ROOT="${GITHUB_WORKSPACE}/firmware/zmk-config" \
+            ${{ matrix.cmake-args }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.shield }}-${{ matrix.board }}-zmk
+          path: firmware/zmk-config/build/zephyr/zmk.uf2
