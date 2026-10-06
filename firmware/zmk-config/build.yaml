@@ -2,6 +2,7 @@
 include:
   - board: nice_nano//zmk
     shield: corne_left
+    snippet: studio-rpc
   - board: nice_nano//zmk
     shield: corne_right
   - board: nice_nano//zmk
