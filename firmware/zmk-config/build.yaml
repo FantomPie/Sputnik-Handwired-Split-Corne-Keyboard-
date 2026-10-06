@@ -1,12 +1,5 @@
----
 include:
   - board: nice_nano//zmk
     shield: corne_left
     snippet: studio-rpc-usb-uart
-    cmake-args: -DCONFIG_ZMK_STUDIO=y
-  - board: nice_nano//zmk
-    shield: corne_right
-  - board: nice_nano//zmk
-    shield: corne_right
-  - board: nice_nano//zmk
-    shield: settings_reset
+    cmake-args: -DCONFIG_ZMK_STUDIO=y -DCONFIG_ZMK_STUDIO_LOCKING=n -DCONFIG_USB_DEVICE_PID=0x8888
