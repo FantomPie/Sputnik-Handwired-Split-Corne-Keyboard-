@@ -1,6 +1,6 @@
 ---
 include:
   - board: nice_nano//zmk
-    shield: corne_hw_left
+    shield: corne_left
   - board: nice_nano//zmk
-    shield: corne_hw_right
+    shield: corne_right
