@@ -48,5 +48,5 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.shield }}-${{ matrix.board }}-zmk
+          name: ${{ matrix.shield }}-nice_nano-zmk
           path: firmware/zmk-config/build/zephyr/zmk.uf2
